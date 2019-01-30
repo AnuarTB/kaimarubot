@@ -39,7 +39,7 @@ for r in (("<br/>","")),(("<td>","")),(("</td>","")),(("&amp;"," & ")),(('<td cl
     dinner = dinner.replace(*r)
 
 def start(bot, update):
-    update.effective_message.reply_text("I'm a bot, please send following commands: \n /breakfast - to get breakfast \n /lunch - to get lunch \n /dinner - to get dinner.")	
+    update.effective_message.reply_text("Hello! I'm a bot, please send following commands: \n /breakfast - to get breakfast \n /lunch - to get lunch \n /dinner - to get dinner.")	
 
 def echo(bot, update):
     update.effective_message.reply_text(update.effective_message.text)
