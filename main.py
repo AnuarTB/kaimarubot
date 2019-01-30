@@ -4,7 +4,7 @@ import re
 import urllib.request as ur
 from bs4 import BeautifulSoup
 
-updater = Updater(token='741003970:AAHRxKNpNVtyeH5SCA7o0PJNu3bmlbeEam8')
+updater = Updater(token='')
 dispatcher = updater.dispatcher
 import logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
