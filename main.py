@@ -1,17 +1,17 @@
-from telegram.ext import Updater, CommandHandler
+import logging
+import os
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 import requests
 import re
 import urllib.request as ur
 from bs4 import BeautifulSoup
 
-updater = Updater(token='')
+updater = Updater(token='741003970:AAHRxKNpNVtyeH5SCA7o0PJNu3bmlbeEam8')
 dispatcher = updater.dispatcher
-import logging
+
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                      level=logging.INFO)
 
-def start(bot, update):
-    bot.send_message(chat_id=update.message.chat_id, text="I'm a bot, please send following commands: \n /breakfast - to get breakfast \n /lunch - to get lunch \n /dinner - to get dinner.")
 
 url = "http://www.kaist.edu/_prog/fodlst/?site_dvs_cd=en&menu_dvs_cd=050303"
 html = ur.urlopen(url).read()
@@ -38,25 +38,52 @@ dinner = str(menuraw[2])
 for r in (("<br/>","")),(("<td>","")),(("</td>","")),(("&amp;"," & ")),(('<td class="t_end">','')):
     dinner = dinner.replace(*r)
 
+def start(bot, update):
+    update.effective_message.reply_text("I'm a bot, please send following commands: \n /breakfast - to get breakfast \n /lunch - to get lunch \n /dinner - to get dinner.")	
+
+def echo(bot, update):
+    update.effective_message.reply_text(update.effective_message.text)
+	
 def send_breakfast(bot, update):
-    bot.send_message(chat_id=update.message.chat_id, text="Today's for breakfast:")
-    bot.send_message(chat_id=update.message.chat_id, text=breakfast)
+    update.effective_message.reply_text("Today's for breakfast:")
+    update.effective_message.reply_text(breakfast)
 
 def send_lunch(bot, update):
-    bot.send_message(chat_id=update.message.chat_id, text="Today's lunch options are:")
-    bot.send_message(chat_id=update.message.chat_id, text=lunch)
+    update.effective_message.reply_text("Today's lunch options are:")
+    update.effective_message.reply_text(lunch)
 
 def send_dinner(bot, update):
-    bot.send_message(chat_id=update.message.chat_id, text="Today's dinner choices are:")
-    bot.send_message(chat_id=update.message.chat_id, text=dinner)
+    update.effective_message.reply_text("Today's dinner choices are:")
+    update.effective_message.reply_text(dinner)
 
 
-start_handler = CommandHandler('start', start)
-bf_handler = CommandHandler('breakfast', send_breakfast)
-ln_handler = CommandHandler('lunch', send_lunch)
-dn_handler = CommandHandler('dinner', send_dinner)
-dispatcher.add_handler(start_handler)
-dispatcher.add_handler(bf_handler)
-dispatcher.add_handler(ln_handler)
-dispatcher.add_handler(dn_handler)
-updater.start_polling()
+
+if __name__ == "__main__":
+    # Set these variable to the appropriate values
+    TOKEN = "741003970:AAHRxKNpNVtyeH5SCA7o0PJNu3bmlbeEam8"
+    NAME = "secure-spire-56488"
+
+    # Port is given by Heroku
+    PORT = os.environ.get('PORT')
+
+    # Enable logging
+    logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                        level=logging.INFO)
+    logger = logging.getLogger(__name__)
+
+    # Set up the Updater
+    updater = Updater(TOKEN)
+    dp = updater.dispatcher
+    # Add handlers
+    dp.add_handler(CommandHandler('start', start))
+	dp.add_handler(CommandHandler('breakfast', send_breakfast))
+	dp.add_handler(CommandHandler('lunch', send_lunch))
+	dp.add_handler(CommandHandler('dinner', send_dinner))
+    dp.add_handler(MessageHandler(Filters.text, echo))
+
+    # Start the webhook
+    updater.start_webhook(listen="0.0.0.0",
+                          port=int(PORT),
+                          url_path=TOKEN)
+    updater.bot.setWebhook("https://{}.herokuapp.com/{}".format(NAME, TOKEN))
+    updater.idle()
