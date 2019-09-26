@@ -60,6 +60,6 @@ def telegram_webhook():
         elif text == "/dinner":
             bot.sendMessage(chat_id, dinner)
         else:
-            bot.sendMessage(chat_id, "Ne pishi erundu")
+            bot.sendMessage(chat_id, "Duman gde Kaimaru bot?")
     return "OK"
 
